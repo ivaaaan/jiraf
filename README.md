@@ -33,13 +33,12 @@ One way to integrate jiraf with git is to create a simple script like this:
 ```bash
 #!/bin/bash
 
-git checkout -b $(jiraf $2)
+git checkout -b $(jiraf $1)
 ```
 
 And put this script into `~/bin/git-cb` file (replace "cb" with preferred subcommand name). Now you can just run `git cb ISSUE-1`, which will create a new branch with a generated name by jiraf.
 
 ## TODO
 
-[] Allow customizing generation of summary
-
-[] Add a limit for the max amount of words in the branch name
+- [ ] Allow customizing generation of summary
+- [ ] Add a limit for the max amount of words in the branch name
