@@ -40,5 +40,6 @@ And put this script into `~/bin/git-cb` file (replace "cb" with preferred subcom
 
 ## TODO
 
-[ ] Allow customizing generation of summary
-[ ] Add a limit for the max amount of words in the branch name
+[] Allow customizing generation of summary
+
+[] Add a limit for the max amount of words in the branch name
