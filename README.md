@@ -39,8 +39,8 @@ Available functions:
 
 | Name             | Arguments     | Description                                           |
 |------------------|---------------|-------------------------------------------------------|
-| `to_lower        |               | Convert a string to lowercase                         |
-| `replace         | `old, new`    | Replace all `old` with `new`                          |
+| `to_lower`       |               | Convert a string to lowercase                         |
+| `replace`        | `old, new`    | Replace all `old` with `new`                          |
 | `replace_regexp` | `regexp, new` | Replace all characters that match `regexp` with `new` |
 
 ## Usage
