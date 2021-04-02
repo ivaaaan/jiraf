@@ -45,7 +45,7 @@ Available functions:
 
 ## Usage
 
-## Git subcommand
+### Git subcommand
 
 One way to integrate jiraf with git is to create a simple script like this:
 
@@ -57,7 +57,7 @@ git checkout -b $(jiraf $1)
 
 And put this script into `~/bin/git-cb` file (replace "cb" with a preferred subcommand name). Now you can just run `git cb ISSUE-1`, which will create a new branch with a generated name by jiraf.
 
-## Alias
+### Alias
 
 Another one is an alias:
 
