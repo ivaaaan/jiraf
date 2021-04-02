@@ -4,19 +4,18 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
-	"strings"
 
 	"github.com/andygrunwald/go-jira"
 	"gopkg.in/yaml.v2"
 )
 
 type Config struct {
-	URL              string `yaml:"url"`
-	Username         string `yaml:"username"`
-	Password         string `yaml:"password"`
-	BranchNameRegExp string `yaml:"replace_regexp"`
-	Format           string `yaml:"format"`
+	URL              string              `yaml:"url"`
+	Username         string              `yaml:"username"`
+	Password         string              `yaml:"password"`
+	BranchNameRegExp string              `yaml:"replace_regexp"`
+	Format           string              `yaml:"format"`
+	Pipeline         map[string][]string `yaml:"pipeline"`
 }
 
 func getConfig() Config {
@@ -59,17 +58,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	branch := fmt.Sprintf(config.Format, issue.Key, beatifySummary(issue.Fields.Summary, config.BranchNameRegExp))
-	fmt.Println(branch)
-}
+	branchName := issue.Fields.Summary
 
-func beatifySummary(s string, regex string) string {
-	reg, err := regexp.Compile(regex)
-	if err != nil {
-		log.Fatal(err)
+	for pipeName, args := range config.Pipeline {
+		if pipeFunc, ok := PipelineMap[pipeName]; ok {
+			branchName, err = pipeFunc(branchName, args...)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
 	}
 
-	processedString := reg.ReplaceAllString(strings.ReplaceAll(s, " ", "-"), "")
-
-	return processedString
+	branch := fmt.Sprintf(config.Format, issue.Key, branchName)
+	fmt.Println(branch)
 }

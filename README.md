@@ -10,8 +10,10 @@ Configuration file stored in `~/.config/jiraf/config.yml` in the YAML format.
 url: <url to your Jira>
 username: <username>
 password: <Jira API token>
-regexp: <regexp to replace characters from summary>
 format: <format for fmt.Sprintf, the first argument is an issue key, the second one is generated summary>
+pipeline:
+  <function>: [<arguments>...]
+  ...
 ```
 
 ### Example
@@ -20,11 +22,26 @@ format: <format for fmt.Sprintf, the first argument is an issue key, the second 
 url:  <url to your Jira>
 username: <username>
 password: <Jira api token>
-regexp: "[^a-zA-Z0-9-]+"
 format: "%s_%s"
+pipeline:
+  replace: [' ', '-']
+  replace_regexp: ['[^a-zA-Z0-9-]+', '']
+  to_lower:
 ```
 
 This configuration will generate a branch name like this: `ISSUE-1_Summary-of-your-issue`
+
+## Pipeline
+
+Pipeline is a set of function with arguments, that processes issue summary to generate a branch name.
+
+Available functions:
+
+| Name             | Arguments     | Description                                           |
+|------------------|---------------|-------------------------------------------------------|
+| `to_lower        |               | Convert a string to lowercase                         |
+| `replace         | `old, new`    | Replace all `old` with `new`                          |
+| `replace_regexp` | `regexp, new` | Replace all characters that match `regexp` with `new` |
 
 ## Usage
 
