@@ -29,12 +29,12 @@ func ReplaceRegexp(s string, args ...string) (string, error) {
 		return s, errors.New("Invalid function usage: replace_regexp <string> <regexp> <new>")
 	}
 
-	reg, err := regexp.Compile(args[1])
+	reg, err := regexp.Compile(args[0])
 	if err != nil {
 		return s, err
 	}
 
-	return reg.ReplaceAllString(s, ""), nil
+	return reg.ReplaceAllString(s, args[1]), nil
 }
 
 var PipelineMap map[string]Pipe = map[string]Pipe{
