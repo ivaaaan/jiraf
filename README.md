@@ -29,11 +29,11 @@ pipeline:
   to_lower:
 ```
 
-This configuration will generate a branch name like this: `ISSUE-1_Summary-of-your-issue`
+This configuration will generate a branch name like this: `ISSUE-1_summary-of-your-issue`
 
 ## Pipeline
 
-Pipeline is a set of function with arguments, that processes issue summary to generate a branch name.
+Pipeline is a set of functions with arguments. Each of the function will be called on a result from a previous function. 
 
 Available functions:
 
