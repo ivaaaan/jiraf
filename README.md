@@ -6,10 +6,12 @@ Jiraf finds an issue in Jira by key and generates a git branch name from its sum
 
 ### Git
 
+```bash
 cd /tmp
 git clone https://github.com/ivaaaan/jiraf.git
 cd jiraf
 go install
+```
 
 ## Configuration
 
