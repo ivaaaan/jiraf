@@ -2,6 +2,15 @@
 
 Jiraf finds an issue in Jira by key and generates a git branch name from its summary.
 
+## Installation
+
+### Git
+
+cd /tmp
+git clone https://github.com/ivaaaan/jiraf.git
+cd jiraf
+go install
+
 ## Configuration
 
 Configuration file stored in `~/.config/jiraf/config.yml` in the YAML format.
