@@ -2,6 +2,9 @@
 
 Jiraf finds an issue in Jira by key and generates a git branch name from its summary.
 
+![gif](https://raw.githubusercontent.com/ivaaaan/gifs/master/jiraf.gif)
+
+
 ## Installation
 
 ### Git
