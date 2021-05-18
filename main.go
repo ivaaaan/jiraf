@@ -53,6 +53,10 @@ func main() {
 
 	jiraClient, _ := jira.NewClient(tp.Client(), config.URL)
 
+	if len(os.Args) != 1 {
+		log.Fatal("expected single argument, a ticket id (e.g., PROJECT-123")
+	}
+	
 	issue, _, err := jiraClient.Issue.Get(os.Args[1], &jira.GetQueryOptions{})
 	if err != nil {
 		log.Fatal(err)
