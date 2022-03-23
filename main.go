@@ -9,6 +9,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var help = `Jiraf finds an issue in Jira by key and generates a git branch name from its summary.
+
+Usage:
+	jiraf <jira ticket id>
+
+Options:
+	--help, Print this message
+`
+
 type Config struct {
 	URL              string              `yaml:"url"`
 	Username         string              `yaml:"username"`
@@ -53,13 +62,20 @@ func main() {
 
 	jiraClient, _ := jira.NewClient(tp.Client(), config.URL)
 
-	if len(os.Args) != 1 {
-		log.Fatal("expected single argument, a ticket id (e.g., PROJECT-123")
+	if len(os.Args) < 2 {
+		fmt.Println("Error: expected single argument, a ticket id (e.g., PROJECT-123)")
+		os.Exit(1)
 	}
-	
+
+	if os.Args[1] == "--help" {
+		fmt.Println(help)
+		return
+	}
+
 	issue, _, err := jiraClient.Issue.Get(os.Args[1], &jira.GetQueryOptions{})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	branchName := issue.Fields.Summary
@@ -68,7 +84,8 @@ func main() {
 		if pipeFunc, ok := PipelineMap[pipeName]; ok {
 			branchName, err = pipeFunc(branchName, args...)
 			if err != nil {
-				log.Fatal(err)
+				fmt.Println(err)
+				os.Exit(1)
 			}
 		}
 
