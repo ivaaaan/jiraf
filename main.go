@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"strings"
 
 	"github.com/andygrunwald/go-jira"
 	"gopkg.in/yaml.v2"
@@ -27,70 +27,89 @@ type Config struct {
 	Pipeline         map[string][]string `yaml:"pipeline"`
 }
 
-func getConfig() Config {
+func defaultConfigPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatal(err)
+		return "", nil
 	}
 
-	f, err := os.Open(home + "/.config/jiraf/config.yml")
+	return home + "/.config/jiraf/config.yml", nil
+}
+
+func getConfig(path string) (*Config, error) {
+	f, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer f.Close()
 
-	var config Config
 	decoder := yaml.NewDecoder(f)
 
-	err = decoder.Decode(&config)
-	if err != nil {
-		log.Fatal(err)
+	var config Config
+	if err := decoder.Decode(&config); err != nil {
+		return nil, err
 	}
 
-	return config
-
+	return &config, nil
 }
 
 func main() {
-	config := getConfig()
+	configPath, err := defaultConfigPath()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error getting a default config path: %v", err)
+		os.Exit(1)
+	}
+
+	config, err := getConfig(configPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error parsing config: %v", err)
+		os.Exit(1)
+	}
 
 	tp := jira.BasicAuthTransport{
 		Username: config.Username,
 		Password: config.Password,
 	}
 
-	jiraClient, _ := jira.NewClient(tp.Client(), config.URL)
+	jiraClient, err := jira.NewClient(tp.Client(), config.URL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error initializing a Jira client: %v", err)
+		os.Exit(1)
+	}
 
 	if len(os.Args) < 2 {
-		fmt.Println("Error: expected single argument, a ticket id (e.g., PROJECT-123)")
+		fmt.Fprint(os.Stderr, "expected single argument, a ticket ID (e.g., PROJECT-123)")
 		os.Exit(1)
 	}
 
 	if os.Args[1] == "--help" {
-		fmt.Println(help)
-		return
+		fmt.Fprint(os.Stdout, help)
+		os.Exit(0)
 	}
 
 	issue, _, err := jiraClient.Issue.Get(os.Args[1], &jira.GetQueryOptions{})
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "error getting a Jira issue: %v", err)
 		os.Exit(1)
 	}
 
 	branchName := issue.Fields.Summary
 
+	var errors []string
 	for pipeName, args := range config.Pipeline {
 		if pipeFunc, ok := PipelineMap[pipeName]; ok {
 			branchName, err = pipeFunc(branchName, args...)
 			if err != nil {
-				fmt.Println(err)
-				os.Exit(1)
+				errors = append(errors, fmt.Sprintf("%s function returned an error: %v", pipeName, err))
 			}
 		}
-
 	}
 
-	branch := fmt.Sprintf(config.Format, issue.Key, branchName)
-	fmt.Println(branch)
+	if len(errors) > 0 {
+		fmt.Fprintf(os.Stderr, "one or more functions returned errors: %s", strings.Join(errors, ","))
+		os.Exit(1)
+	}
+
+	fmt.Fprintf(os.Stdout, config.Format, issue.Key, branchName)
 }

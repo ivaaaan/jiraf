@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -16,17 +15,15 @@ func ToLower(s string, args ...string) (string, error) {
 
 func Replace(s string, args ...string) (string, error) {
 	if len(args) < 2 {
-		return s, errors.New("Invalid function usage: replace <string> <old> <new>")
+		return s, errors.New("invalid function usage: replace <string> <old> <new>")
 	}
-
-	fmt.Println(args[0])
 
 	return strings.ReplaceAll(s, args[0], args[1]), nil
 }
 
 func ReplaceRegexp(s string, args ...string) (string, error) {
 	if len(args) < 2 {
-		return s, errors.New("Invalid function usage: replace_regexp <string> <regexp> <new>")
+		return s, errors.New("invalid function usage: replace_regexp <string> <regexp> <new>")
 	}
 
 	reg, err := regexp.Compile(args[0])
